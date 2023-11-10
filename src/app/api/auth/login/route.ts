@@ -19,6 +19,13 @@ export async function POST(request: Request) {
     });
   }
 
+  if (user.password !== password) {
+    return new Response(JSON.stringify({ error: "Password not match" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   return new Response(JSON.stringify({ data: { message: `Hello ${user.username}` } }), {
     status: 200,
     headers: { "Content-Type": "application/json" },
