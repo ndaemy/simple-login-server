@@ -7,7 +7,12 @@ export async function POST(request: Request) {
   if (!email || !password || !username) {
     return new Response(JSON.stringify({ error: "Missing email or password or username" }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Content-Type": "application/json",
+      },
     });
   }
 
@@ -16,7 +21,12 @@ export async function POST(request: Request) {
   if (emailExist || usernameExist) {
     return new Response(JSON.stringify({ error: "Email already exists" }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Content-Type": "application/json",
+      },
     });
   }
 
@@ -28,6 +38,11 @@ export async function POST(request: Request) {
 
   return new Response(JSON.stringify({ data: { user } }), {
     status: 200,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Content-Type": "application/json",
+    },
   });
 }
