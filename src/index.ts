@@ -8,6 +8,10 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cors());
+app.use((req, res, next) => {
+  res.setHeader("Cache-Control", "s-max-age=1, stale-while-revalidate");
+  next();
+});
 
 const authRouter = express.Router();
 const usersRouter = express.Router();
