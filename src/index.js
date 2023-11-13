@@ -88,7 +88,7 @@ authRouter.post("/register", (req, res) =>
 usersRouter.get("/", (req, res) =>
   __awaiter(void 0, void 0, void 0, function* () {
     const { rows } = yield (0, postgres_1.sql)`SELECT * FROM users`;
-    res.json({ data: rows });
+    res.json({ data: { users: rows } });
   })
 );
 app.use("/api/auth", authRouter);

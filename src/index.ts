@@ -68,7 +68,7 @@ authRouter.post("/register", async (req: Request<{}, {}, RegisterBody>, res) => 
 
 usersRouter.get("/", async (req, res) => {
   const { rows } = await sql`SELECT * FROM users`;
-  res.json({ data: rows });
+  res.json({ data: { users: rows } });
 });
 
 app.use("/api/auth", authRouter);
