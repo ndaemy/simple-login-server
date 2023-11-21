@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const postgres_1 = require("@vercel/postgres");
-const bcrypt_1 = __importDefault(require("bcrypt"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const cors_1 = __importDefault(require("cors"));
 require("dotenv/config");
 const express_1 = __importDefault(require("express"));
@@ -40,7 +40,7 @@ authRouter.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, functi
             .status(400)
             .json({ error: { code: "not_registered_email", message: "가입되지 않은 이메일입니다" } });
     }
-    const isPasswordCorrect = yield bcrypt_1.default.compare(password, rows[0].password);
+    const isPasswordCorrect = yield bcryptjs_1.default.compare(password, rows[0].password);
     if (!isPasswordCorrect) {
         return res
             .status(400)
@@ -65,7 +65,7 @@ authRouter.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, fun
             .status(400)
             .json({ error: { code: "conflict_email", message: "이미 존재하는 이메일입니다" } });
     }
-    const hashedPassword = yield bcrypt_1.default.hash(password, 10);
+    const hashedPassword = yield bcryptjs_1.default.hash(password, 10);
     const { rows } = yield (0, postgres_1.sql) `INSERT INTO users (email, username, password) VALUES (${email}, ${username}, ${hashedPassword})`;
     res.json({
         data: {

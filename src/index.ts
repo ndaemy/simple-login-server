@@ -1,5 +1,5 @@
 import { sql } from "@vercel/postgres";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import cors from "cors";
 import "dotenv/config";
 import express, { Request } from "express";
