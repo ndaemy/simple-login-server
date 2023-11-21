@@ -29,17 +29,30 @@ authRouter.post("/login", async (req: Request<{}, {}, LoginBody>, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ error: "빠진 필드가 있습니다." });
+    return res
+      .status(400)
+      .json({ error: { code: "required_fields", message: "빠진 필드가 있습니다" } });
   }
 
-  const { rows } = await sql`SELECT * FROM users WHERE email = ${email} AND password = ${password}`;
+  const { rowCount: emailRowCount } = await sql`SELECT * FROM users WHERE email = ${email}`;
+  if (!emailRowCount) {
+    return res
+      .status(400)
+      .json({ error: { code: "not_registered_email", message: "가입되지 않은 이메일입니다" } });
+  }
 
-  if (rows.length === 0) {
-    return res.status(400).json({ error: "이메일 혹은 비밀번호가 틀렸습니다." });
+  const { rows, rowCount: passwordRowCount } =
+    await sql`SELECT * FROM users WHERE email = ${email} AND password = ${password}`;
+  if (!passwordRowCount) {
+    return res
+      .status(400)
+      .json({ error: { code: "wrong_password", message: "비밀번호를 잘못 입력했습니다" } });
   }
 
   res.json({
-    data: "로그인에 성공하였습니다.",
+    data: {
+      message: `안녕하세요 ${rows[0].username}님!`,
+    },
   });
 });
 
@@ -47,13 +60,17 @@ authRouter.post("/register", async (req: Request<{}, {}, RegisterBody>, res) => 
   const { email, username, password } = req.body;
 
   if (!email || !username || !password) {
-    return res.status(400).json({ error: "빠진 필드가 있습니다." });
+    return res
+      .status(400)
+      .json({ error: { code: "required_fields", message: "빠진 필드가 있습니다" } });
   }
 
   const { rowCount } =
     await sql`SELECT * FROM users WHERE email = ${email} OR username = ${username}`;
   if (rowCount > 0) {
-    return res.status(400).json({ error: "이미 존재하는 유저입니다." });
+    return res
+      .status(400)
+      .json({ error: { code: "conflict_email", message: "이미 존재하는 이메일입니다" } });
   }
 
   const { rows } =
@@ -62,7 +79,10 @@ authRouter.post("/register", async (req: Request<{}, {}, RegisterBody>, res) => 
   console.log(rows);
 
   res.json({
-    data: "유저가 성공적으로 생성되었습니다.",
+    data: {
+      code: "succeed",
+      message: "유저가 성공적으로 생성되었습니다",
+    },
   });
 });
 
