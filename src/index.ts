@@ -1,4 +1,5 @@
 import { sql } from "@vercel/postgres";
+import bcrypt from "bcrypt";
 import cors from "cors";
 import "dotenv/config";
 import express, { Request } from "express";
@@ -34,16 +35,15 @@ authRouter.post("/login", async (req: Request<{}, {}, LoginBody>, res) => {
       .json({ error: { code: "required_fields", message: "빠진 필드가 있습니다" } });
   }
 
-  const { rowCount: emailRowCount } = await sql`SELECT * FROM users WHERE email = ${email}`;
-  if (!emailRowCount) {
+  const { rows, rowCount } = await sql`SELECT * FROM users WHERE email = ${email}`;
+  if (!rowCount) {
     return res
       .status(400)
       .json({ error: { code: "not_registered_email", message: "가입되지 않은 이메일입니다" } });
   }
 
-  const { rows, rowCount: passwordRowCount } =
-    await sql`SELECT * FROM users WHERE email = ${email} AND password = ${password}`;
-  if (!passwordRowCount) {
+  const isPasswordCorrect = await bcrypt.compare(password, rows[0].password);
+  if (!isPasswordCorrect) {
     return res
       .status(400)
       .json({ error: { code: "wrong_password", message: "비밀번호를 잘못 입력했습니다" } });
@@ -72,8 +72,9 @@ authRouter.post("/register", async (req: Request<{}, {}, RegisterBody>, res) => 
       .json({ error: { code: "conflict_email", message: "이미 존재하는 이메일입니다" } });
   }
 
+  const hashedPassword = await bcrypt.hash(password, 10);
   const { rows } =
-    await sql`INSERT INTO users (email, username, password) VALUES (${email}, ${username}, ${password})`;
+    await sql`INSERT INTO users (email, username, password) VALUES (${email}, ${username}, ${hashedPassword})`;
 
   res.json({
     data: {
