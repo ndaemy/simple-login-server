@@ -65,8 +65,7 @@ authRouter.post("/register", async (req: Request<{}, {}, RegisterBody>, res) => 
       .json({ error: { code: "required_fields", message: "빠진 필드가 있습니다" } });
   }
 
-  const { rowCount } =
-    await sql`SELECT * FROM users WHERE email = ${email} OR username = ${username}`;
+  const { rowCount } = await sql`SELECT * FROM users WHERE email = ${email}`;
   if (rowCount > 0) {
     return res
       .status(400)
@@ -75,8 +74,6 @@ authRouter.post("/register", async (req: Request<{}, {}, RegisterBody>, res) => 
 
   const { rows } =
     await sql`INSERT INTO users (email, username, password) VALUES (${email}, ${username}, ${password})`;
-
-  console.log(rows);
 
   res.json({
     data: {
