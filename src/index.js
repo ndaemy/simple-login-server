@@ -75,7 +75,7 @@ authRouter.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, fun
     });
 }));
 usersRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { rows } = yield (0, postgres_1.sql) `SELECT * FROM users`;
+    const { rows } = yield (0, postgres_1.sql) `SELECT * FROM users ORDER BY created_at DESC`;
     res.json({
         data: {
             users: rows.map(({ email, username }) => ({ email, username })),
