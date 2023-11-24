@@ -52,6 +52,8 @@ authRouter.post("/login", async (req: Request<{}, {}, LoginBody>, res) => {
   res.json({
     data: {
       message: `안녕하세요 ${rows[0].username}님!`,
+      username: rows[0].username,
+      jwt: "dummy-jwt",
     },
   });
 });
